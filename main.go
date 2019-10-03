@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "cncf-cli/cmd"
+import "github.com/agrimrules/cncf-cli/cmd"
 
 func main() {
   cmd.Execute()
