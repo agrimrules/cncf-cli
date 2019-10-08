@@ -1,0 +1,17 @@
+workspace:
+  base: /go
+  path: github.com/agrimrules/cncf-cli
+pipeline:
+  fetch:
+    image: docker:git
+    commands:
+      - git fetch --tags
+
+  release:
+    when:
+      event:
+        - tag
+    image: golang:1.12
+    secrets: [github_token]
+    commands:
+      - curl -sL https://git.io/goreleaser | bash
