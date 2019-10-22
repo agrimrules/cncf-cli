@@ -18,28 +18,34 @@ package cmd
 import (
 	"fmt"
 	"os"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
 )
+
+// InsertSuccess is the default response from the API
+type InsertSuccess struct {
+	Response string
+}
 
 // insertCmd represents the insert command
 var insertCmd = &cobra.Command{
 	Use:   "insert",
 	Short: "Inserts a note",
-	Long: `Inserts a note via HTTP/GRPC to the backend`,
+	Long:  `Inserts a note via HTTP/GRPC to the backend`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// HTTP Client
 		client := resty.New()
 		resp, err := client.R().
-		SetHeader("Content-Type", "application/json").
-		SetBody(`{user: `+args[0]+` , post: `+args[1]+`}`).
-		// SetResult(AuthSuccess{}).
-		Post("http://localhost:8080/post")
+			SetHeader("Content-Type", "application/json").
+			SetResult(&InsertSuccess{}).
+			SetBody(`{ "user": "` + args[0] + `", "message": "` + args[1] + `" }`).
+			Post("http://localhost:8080/post")
 		if err != nil {
-			fmt.Println("Error :",err)
+			fmt.Println("Error :", err)
 			os.Exit(1)
 		}
-		fmt.Println("Success ", resp)
+		fmt.Println("Successfully ", resp.Result().(*InsertSuccess).Response)
 	},
 }
 
