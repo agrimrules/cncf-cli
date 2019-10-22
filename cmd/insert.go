@@ -17,22 +17,29 @@ package cmd
 
 import (
 	"fmt"
-
+	"os"
+	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
 )
 
 // insertCmd represents the insert command
 var insertCmd = &cobra.Command{
 	Use:   "insert",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Inserts a note",
+	Long: `Inserts a note via HTTP/GRPC to the backend`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("insert called")
+		// HTTP Client
+		client := resty.New()
+		resp, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(`{user: `+args[0]+` , post: `+args[1]+`}`).
+		// SetResult(AuthSuccess{}).
+		Post("http://localhost:8080/post")
+		if err != nil {
+			fmt.Println("Error :",err)
+			os.Exit(1)
+		}
+		fmt.Println("Success ", resp)
 	},
 }
 
